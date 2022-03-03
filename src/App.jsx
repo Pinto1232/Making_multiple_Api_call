@@ -1,43 +1,43 @@
-import { useState } from 'react'
-import logo from './logo.svg'
+import { useState, useEffect } from 'react'
+import axios, { Axios } from 'axios'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () =>  {
+  const [playerName, setPlayerName] = useState([])
+  const [playerImage, setPlayerImage] = useState([])
+
+  const fetchData = () =>{
+    const playerApi = 'https://www.balldontlie.io/api/v1/players/237'
+    const playerImage = ' https://nba-players.herokuapp.com/players-stats/james/lebron'
+
+    const getNBAPlayer = axios.get(playerApi)
+    const getPlayerPic = axios.get(playerImage)
+    axios.all([getNBAPlayer, getPlayerPic]).then(
+      axios.spread((...allData) =>
+      {
+        const allDataPlayer = allData[0].data.first_name
+        const getAllPlayerPic = allData[1].config.url
+
+        console.log("Player", allDataPlayer);
+        console.log("Pictures", getAllPlayerPic);
+       
+        setPlayerName(allDataPlayer);
+        setPlayerImage(getAllPlayerPic);
+        
+      })
+    )
+  }
+
+
+  useEffect(() => {
+     fetchData()
+  }, [])
+  
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <h2>{playerName}</h2>
+      <img src={playerImage} />
     </div>
   )
 }
